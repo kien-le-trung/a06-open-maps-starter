@@ -344,9 +344,9 @@ picture, and `OpenStreetsMap.getClosestVertex` to turn a latitude and
 longitude into a vertex. You can add methods, fields, and nested classes to
 `MyFeature.java`. Keep it all in that one file so it uploads with the rest.
 
-Part 3 is graded by hand, from your code, picture 4, and your answer to
-write-up Question 4. A feature that answers the nearest-dining-hall question
-earns no Part 3 points.
+Part 3 is graded by hand, from your code and picture 4. Write-up Question 4,
+graded with the write-up, asks you to explain your design. A feature that
+answers the nearest-dining-hall question earns no Part 3 points.
 
 ## Part 4: Write-up (25 points)
 
