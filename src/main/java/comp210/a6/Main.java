@@ -62,10 +62,10 @@ public class Main {
         System.out.println("Map: " + graph.getVertices().size() + " intersections. Sitterson Hall is vertex " + source + ".");
 
         // Part 1: fewest intersections
-        HashMap<Integer, Integer> hops = new HashMap<>();
+        HashMap<Integer, Integer> steps = new HashMap<>();
         HashMap<Integer, Integer> bfsParent = new HashMap<>();
         try {
-            RoutePlanner.bfs(graph, source, hops, bfsParent);
+            RoutePlanner.bfs(graph, source, steps, bfsParent);
         } catch (UnsupportedOperationException e) {
             System.out.println("Part 1 is not written yet, so there are no pictures. Start with bfs in RoutePlanner.");
             return;
@@ -73,18 +73,18 @@ public class Main {
 
         // Snap to the nearest intersection Sitterson can reach, so the route
         // never ends on a dead-end scrap of road.
-        int destination = OpenStreetsMap.getClosestVertex(graph, hops.keySet(),
+        int destination = OpenStreetsMap.getClosestVertex(graph, steps.keySet(),
                 DESTINATION_LATITUDE, DESTINATION_LONGITUDE);
         List<Integer> bfsRoute = RoutePlanner.routeTo(bfsParent, source, destination);
         double bfsMeters = OpenStreetsMap.routeLength(graph, bfsRoute);
-        System.out.printf("BFS route:      %d hops, %.0f m (%d intersections reachable)%n",
-                bfsRoute.size() - 1, bfsMeters, hops.size());
+        System.out.printf("BFS route:      %d steps, %.0f m (%d intersections reachable)%n",
+                bfsRoute.size() - 1, bfsMeters, steps.size());
 
         OpenStreetsMap.stylePath(graph, bfsRoute, OpenStreetsMap.ORANGE);
         OpenStreetsMap.styleRoot(graph, source);
         OpenStreetsMap.styleRoot(graph, destination);
         bridges.setDescription(String.format("Picture 1 (Part 1): the BFS route (orange) from Sitterson Hall to %s,"
-                + " %d hops and %.0f m.", DESTINATION_NAME, bfsRoute.size() - 1, bfsMeters));
+                + " %d steps and %.0f m.", DESTINATION_NAME, bfsRoute.size() - 1, bfsMeters));
         bridges.visualize();
 
         // Part 2: fewest meters
@@ -100,7 +100,7 @@ public class Main {
         if (distance != null) {
             List<Integer> dijkstraRoute = RoutePlanner.routeTo(parent, source, destination);
             double dijkstraMeters = OpenStreetsMap.routeLength(graph, dijkstraRoute);
-            System.out.printf("Dijkstra route: %d hops, %.0f m%n", dijkstraRoute.size() - 1, dijkstraMeters);
+            System.out.printf("Dijkstra route: %d steps, %.0f m%n", dijkstraRoute.size() - 1, dijkstraMeters);
 
             OpenStreetsMap.styleDistance(graph, distance);
             OpenStreetsMap.styleRoot(graph, source);
@@ -111,8 +111,8 @@ public class Main {
             OpenStreetsMap.styleRoutes(graph, bfsRoute, dijkstraRoute);
             OpenStreetsMap.styleRoot(graph, source);
             OpenStreetsMap.styleRoot(graph, destination);
-            bridges.setDescription(String.format("Picture 3 (Part 2): to %s, the BFS route (orange) is %d hops and"
-                    + " %.0f m; the Dijkstra route (red) is %d hops and %.0f m. Purple is shared.",
+            bridges.setDescription(String.format("Picture 3 (Part 2): to %s, the BFS route (orange) is %d steps and"
+                    + " %.0f m; the Dijkstra route (red) is %d steps and %.0f m. Purple is shared.",
                     DESTINATION_NAME, bfsRoute.size() - 1, bfsMeters, dijkstraRoute.size() - 1, dijkstraMeters));
             bridges.visualize();
         }

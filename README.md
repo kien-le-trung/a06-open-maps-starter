@@ -182,17 +182,17 @@ text.
 
 Open `RoutePlanner.java`. You write two methods.
 
-### `bfs(graph, source, hops, parent)`
+### `bfs(graph, source, steps, parent)`
 
 Breadth-first search from `source`, with a queue (`ArrayDeque`). Fill in two
 maps:
 
-- `hops` maps each vertex BFS reaches to the number of edges on the shortest
+- `steps` maps each vertex BFS reaches to the number of edges on the shortest
   route to it. The source gets 0. A vertex BFS never reaches gets no entry.
 - `parent` maps each reached vertex to the vertex just before it on that
   route. The source gets no entry.
 
-The keys of `hops` work as your visited set. Checking `hops.containsKey(to)`
+The keys of `steps` work as your visited set. Checking `steps.containsKey(to)`
 is O(1), and that is what keeps BFS at O(V + E). The autograder runs your
 `bfs` on 50,000 vertices.
 
@@ -217,7 +217,7 @@ The starting value is the Friday Center. Pick your own, because your
 write-up's numbers come from it.
 
 `Main` snaps your destination to the nearest intersection Sitterson can
-reach. Run `Main`: it prints the BFS route's hops and meters and posts
+reach. Run `Main`: it prints the BFS route's steps and meters and posts
 **picture 1**, the BFS route in orange.
 
 ## Part 2: Fewest meters (50 points)

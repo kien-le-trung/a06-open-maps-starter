@@ -24,13 +24,13 @@ public class RoutePlanner {
     // ------------------------------------------------------------------
 
     /**
-     * Breadth-first search from source. Fills hops with the number of edges
+     * Breadth-first search from source. Fills steps with the number of edges
      * on the shortest route (by edge count) to each vertex BFS reaches, and
      * parent with the vertex just before each one on that route. A vertex BFS
-     * never reaches gets no entry in hops. The source has no parent.
+     * never reaches gets no entry in steps. The source has no parent.
      */
     public static void bfs(GraphAdjList<Integer, ?, Double> graph, int source,
-                           HashMap<Integer, Integer> hops, HashMap<Integer, Integer> parent) {
+                           HashMap<Integer, Integer> steps, HashMap<Integer, Integer> parent) {
         throw new UnsupportedOperationException("Part 1: write RoutePlanner.bfs");
     }
 

@@ -47,7 +47,7 @@ class Part2Test {
 
     @Test
     void dijkstraTakesTheCheapRoute() {
-        // 0 -> 3 costs 10 in one hop; 0 -> 1 -> 2 -> 3 costs 3.
+        // 0 -> 3 costs 10 in one step; 0 -> 1 -> 2 -> 3 costs 3.
         GraphAdjList<Integer, String, Double> g = graph(4, new double[][] {
             {0, 3, 10}, {0, 1, 1}, {1, 2, 1}, {2, 3, 1},
         });

@@ -31,25 +31,25 @@ class Part1Test {
     }
 
     @Test
-    void bfsCountsHopsAlongALine() {
+    void bfsCountsStepsAlongALine() {
         GraphAdjList<Integer, String, Double> g = graph(4, new double[][] {{0, 1, 5}, {1, 2, 5}, {2, 3, 5}});
-        HashMap<Integer, Integer> hops = new HashMap<>();
+        HashMap<Integer, Integer> steps = new HashMap<>();
         HashMap<Integer, Integer> parent = new HashMap<>();
-        RoutePlanner.bfs(g, 0, hops, parent);
-        assertEquals(Map.of(0, 0, 1, 1, 2, 2, 3, 3), hops);
+        RoutePlanner.bfs(g, 0, steps, parent);
+        assertEquals(Map.of(0, 0, 1, 1, 2, 2, 3, 3), steps);
         assertEquals(Map.of(1, 0, 2, 1, 3, 2), parent, "the source has no parent");
     }
 
     @Test
     void bfsIgnoresEdgeLengths() {
-        // 0 -> 1 -> 2 -> 3 is short in meters; 0 -> 4 -> 3 has fewer hops.
+        // 0 -> 1 -> 2 -> 3 is short in meters; 0 -> 4 -> 3 has fewer steps.
         GraphAdjList<Integer, String, Double> g = graph(5, new double[][] {
             {0, 1, 1}, {1, 2, 1}, {2, 3, 1}, {0, 4, 500}, {4, 3, 500},
         });
-        HashMap<Integer, Integer> hops = new HashMap<>();
+        HashMap<Integer, Integer> steps = new HashMap<>();
         HashMap<Integer, Integer> parent = new HashMap<>();
-        RoutePlanner.bfs(g, 0, hops, parent);
-        assertEquals(2, hops.get(3), "0 -> 4 -> 3 is 2 hops");
+        RoutePlanner.bfs(g, 0, steps, parent);
+        assertEquals(2, steps.get(3), "0 -> 4 -> 3 is 2 steps");
         assertEquals(4, parent.get(3));
     }
 
@@ -57,10 +57,10 @@ class Part1Test {
     void bfsFollowsEdgeDirection() {
         // 2 -> 0 is one-way, so 2 cannot be reached from 0.
         GraphAdjList<Integer, String, Double> g = graph(3, new double[][] {{0, 1, 1}, {1, 0, 1}, {2, 0, 1}});
-        HashMap<Integer, Integer> hops = new HashMap<>();
+        HashMap<Integer, Integer> steps = new HashMap<>();
         HashMap<Integer, Integer> parent = new HashMap<>();
-        RoutePlanner.bfs(g, 0, hops, parent);
-        assertEquals(Map.of(0, 0, 1, 1), hops, "a vertex BFS never reaches gets no entry");
+        RoutePlanner.bfs(g, 0, steps, parent);
+        assertEquals(Map.of(0, 0, 1, 1), steps, "a vertex BFS never reaches gets no entry");
         assertFalse(parent.containsKey(2));
     }
 
