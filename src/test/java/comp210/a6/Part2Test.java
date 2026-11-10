@@ -38,14 +38,6 @@ class Part2Test {
     }
 
     @Test
-    void comparatorUsesCompareTo() {
-        PriorityQueueComparator c = new PriorityQueueComparator();
-        assertTrue(c.compare(new Pair<>(1, 2.0), new Pair<>(2, 5.0)) < 0, "2.0 before 5.0");
-        assertTrue(c.compare(new Pair<>(1, 5.0), new Pair<>(2, 2.0)) > 0, "5.0 after 2.0");
-        assertEquals(0, c.compare(new Pair<>(1, 3.0), new Pair<>(2, 3.0)), "a tie");
-    }
-
-    @Test
     void dijkstraTakesTheCheapRoute() {
         // 0 -> 3 costs 10 in one step; 0 -> 1 -> 2 -> 3 costs 3.
         GraphAdjList<Integer, String, Double> g = graph(4, new double[][] {

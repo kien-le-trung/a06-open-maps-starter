@@ -226,19 +226,14 @@ BFS treats a 10-meter road segment the same as a 1,000-meter one. Dijkstra's
 algorithm adds up the length of each segment, so it finds the route with the
 fewest meters.
 
-### `Pair.compareTo` and `PriorityQueueComparator.compare`
+### `Pair.compareTo`
 
 Dijkstra's priority queue holds `Pair<Integer, Double>` entries, a vertex and
-a distance, and it needs to know which pair comes first. Java gives a class
-two ways to answer that, and you write both:
-
-| | Where it lives | What it is for |
-|---|---|---|
-| `Comparable` | inside the class, as `compareTo(other)` | the class's **natural order**, the one Java uses when you give it nothing else |
-| `Comparator` | a separate class, as `compare(a, b)` | an order you hand to a structure, such as `new PriorityQueue<>(comparator)` |
-
-Both return a negative number when the first one comes first, a positive
-number when it comes second, and 0 for a tie.
+a distance, and it needs to know which pair comes first. `Pair` answers that
+with `compareTo(other)`, which sets the class's **natural order**: the order
+Java uses when you give it nothing else. `a.compareTo(b)` returns a negative
+number when `a` comes first, a positive number when `b` comes first, and 0
+for a tie.
 
 Open `Pair.java`. A pair's vertex comes from `getKey()` and its distance
 from `getValue()`. `Pair` is declared `Comparable<Pair<V, D>>`, and its
@@ -248,14 +243,10 @@ vertex plays no part. You do not need to subtract anything: `D` already has
 a `compareTo` of its own. Subtracting would go wrong anyway, since
 `(int) (0.25 - 0.75)` is 0 and turns two different distances into a tie.
 
-Then open `PriorityQueueComparator.java` and write `compare(pair1, pair2)` so
-it uses `Pair`'s `compareTo`. The order then lives in one place, so changing
-it means editing one method. The autograder checks that `compare` goes through
-`compareTo`.
-
-With either one, `java.util.PriorityQueue` becomes a min-heap on distance, so
-`poll()` hands you the closest vertex. Use the comparator in `dijkstra`:
-`new PriorityQueue<>(new PriorityQueueComparator())`.
+A `java.util.PriorityQueue` built with no arguments orders its entries by
+`compareTo`, so once yours works, the queue is a min-heap on distance and
+`poll()` hands you the closest vertex. Create it in `dijkstra` with
+`new PriorityQueue<>()`.
 
 ### `dijkstra(graph, source, distance, parent)`
 
@@ -399,8 +390,7 @@ Upload your code to **Final Project**:
 1. `MapLoader.java`
 2. `RoutePlanner.java`
 3. `Pair.java`
-4. `PriorityQueueComparator.java`
-5. `MyFeature.java`
+4. `MyFeature.java`
 
 The autograder grades Parts 0 to 2 as soon as you submit, and you can
 resubmit as many times as you like before the deadline. If `MyFeature.java`
@@ -420,7 +410,7 @@ every file you upload for one.
 |---|---|---|---|
 | Part 0: `MapLoader` | 20 | Final Project | autograder |
 | Part 1: `bfs` and `routeTo` | 30 | Final Project | autograder |
-| Part 2: `compareTo`, the comparator, `dijkstra`, and `negativeEdgeGraph` | 50 | Final Project | autograder |
+| Part 2: `compareTo`, `dijkstra`, and `negativeEdgeGraph` | 50 | Final Project | autograder |
 | Part 3: your feature | 25 | Final Project | instructor |
 | Early bonus: submit at least 72 hours before the deadline | +10 | Final Project | autograder |
 | BRIDGES URL shows all four pictures under your account | 5 | Final Project Write-up | instructor |
@@ -440,7 +430,6 @@ your cloned folder/          <- open THIS folder in IntelliJ
     MapLoader.java            Part 0, yours
     RoutePlanner.java         Parts 1 and 2, yours
     Pair.java                 Part 2, yours: compareTo
-    PriorityQueueComparator.java  Part 2, yours
     MyFeature.java            Part 3, yours
     Main.java                 runs it all; set your destination at the top
     OpenStreetsMap.java       map helpers and drawing code

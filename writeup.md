@@ -35,15 +35,18 @@ second destination where they differ, and report its numbers too.
 
 ## Question 2: Right answers, wrong algorithm (5 points)
 
-This is the shortest path code that shipped with the original BRIDGES version
-of this assignment. Run it on Chapel Hill and every distance matches yours.
+This is the shortest path code from the original BRIDGES version of this
+assignment, with its ordering written as a `compareTo` on `Pair`. Run it on
+Chapel Hill and every distance matches yours.
 
 ```java
-class PQ_Comparator implements Comparator<Pair<Integer, Double>> {
-  public int compare(Pair<Integer, Double> p1, Pair<Integer, Double> p2) {
-    if (p1.getValue().doubleValue() < p2.getValue().doubleValue())
+class Pair<K, V extends Comparable<V>> implements Comparable<Pair<K, V>> {
+  // the key, the value, getKey(), and getValue(), the same as your Pair
+
+  public int compareTo(Pair<K, V> other) {
+    if (getValue().compareTo(other.getValue()) < 0)
       return 1;
-    else if (p1.getValue().doubleValue() > p2.getValue().doubleValue())
+    else if (getValue().compareTo(other.getValue()) > 0)
       return -1;
     return 0;
   }
@@ -57,7 +60,7 @@ class PQ_Comparator implements Comparator<Pair<Integer, Double>> {
       distance.put (pai.getKey(), Double.MAX_VALUE);
     distance.put(source, 0.);
 
-    PriorityQueue<Pair<Integer, Double>> pq = new PriorityQueue<Pair<Integer, Double>> (100, new PQ_Comparator());
+    PriorityQueue<Pair<Integer, Double>> pq = new PriorityQueue<Pair<Integer, Double>> (100);
     pq.add(new Pair<Integer, Double>(source, distance.get(source)));
 
     while (!pq.isEmpty()) {
