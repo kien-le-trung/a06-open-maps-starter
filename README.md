@@ -6,7 +6,7 @@
 |---|---|
 | Released | Tuesday, November 10 |
 | Due | Tuesday, November 24, 5:00pm. |
-| Points | 150, plus a 10% early bonus |
+| Points | 150, plus a 10% early bonus (12.5 points) |
 | AI | Rung 3, AI as Collaborator. See "Using AI" below. |
 | Collaboration | Solo. Follows the syllabus policy. Never share your API key. |
 
@@ -26,26 +26,17 @@ UNC Charlotte.
 We will be using the following BRIDGES Classes:
 
 | Class | What it is | In the final project |
-  |---|---|---|
-  | `GraphAdjList<K, E1, E2>` | BRIDGES' graph, stored as adjacency lists: a map from each vertex ID to its `Element`, and from each vertex ID to a linked list of its outgoing edges. | The Chapel Hill
-  road map, a `GraphAdjList<Integer, OsmVertex, Double>`. Students call `getVertices()`, `getAdjacencyList(from)`, `addVertex`, `addEdge`, and `getEdgeData(from, to)` on it. |
-  | `Element<E>` | A BRIDGES wrapper around one piece of data, plus drawing information (color, size, location). It is the parent class of `SLelement`. | Each vertex is an `Element<OsmVertex>`.
-  `graph.getVertices()` maps each vertex ID to its `Element`, and `getValue()` returns the `OsmVertex` with the latitude and longitude. `getVisualizer()` is the drawing side: `MyFeature` uses it to color
-  vertices. |
-  | `OsmVertex` | The data for one OpenStreetMap intersection. | The value inside each vertex's `Element`. `getLatitude()` and `getLongitude()` give its location. `MapLoader` saves and rebuilds these,
-  and `OpenStreetsMap` uses them to find the intersection closest to a point. |
-  | `SLelement<E>` | A node in a singly linked list. It extends `Element`, so it has everything an `Element` has, plus a `getNext()` pointer to the next node. | `graph.getAdjacencyList(from)` returns the
-  head node of `from`'s edge list, an `SLelement<Edge<Integer, Double>>`. `getValue()` is the `Edge`, `getNext()` is the next node, and `null` means the list is over. |
-  | `Edge<K, E2>` | One directed edge: the vertex it goes to and its edge data. It is not an `Element`. | An `Edge<Integer, Double>`. `getTo()` is the ID of the neighboring intersection, and
-  `getEdgeData()` is the road segment's length in meters. The edge doesn't store where it starts, because the adjacency list it's in already tells you that. |
-  | `ElementVisualizer` | The drawing settings attached to each `Element`. | It comes back from `getVisualizer()`. The code calls `setColor` on it to color vertices, and `MapLoader` reads
-  `getLocationX()` and `getLocationY()` to save where each vertex is drawn. |
-  | `Color` | A BRIDGES RGB color. | `OpenStreetsMap` defines Carolina blue, orange, and red for drawing routes, and `MyFeature` uses colors for its picture. |
-  | `Bridges` | The connection to the BRIDGES server, made from the assignment number, username, and API key in `.env`. | `Main` creates it, `MapLoader` uses it to fetch the map, and `Main` uses it to
-  post each picture (`setDataStructure`, `setTitle`, `setDescription`, `visualize`). |
-  | `DataSource` | The BRIDGES object that downloads real-world data sets. | `bridges.getDataSource().getOsmData(place, level)` downloads the OpenStreetMap data. Nobody imports it; the call chain returns
-  it. |
-  | `OsmData` | The downloaded OpenStreetMap data set. | Only used for `.getGraph()`, which turns the download into the `GraphAdjList`. It also comes back from the call chain without an import. |
+|---|---|---|
+| `GraphAdjList<K, E1, E2>` | BRIDGES' graph, stored as adjacency lists: a map from each vertex ID to its `Element`, and from each vertex ID to a linked list of its outgoing edges. | The Chapel Hill road map, a `GraphAdjList<Integer, OsmVertex, Double>`. You call `getVertices()`, `getAdjacencyList(from)`, `addVertex`, `addEdge`, and `getEdgeData(from, to)` on it. |
+| `Element<E>` | A BRIDGES wrapper around one piece of data, plus drawing information (color, size, location). It is the parent class of `SLelement`. | Each vertex is an `Element<OsmVertex>`. `graph.getVertices()` maps each vertex ID to its `Element`, and `getValue()` returns the `OsmVertex` with the latitude and longitude. `getVisualizer()` is the drawing side: `MyFeature` uses it to color vertices. |
+| `OsmVertex` | The data for one OpenStreetMap intersection. | The value inside each vertex's `Element`. `getLatitude()` and `getLongitude()` give its location. `MapLoader` saves and rebuilds these, and `OpenStreetsMap` uses them to find the intersection closest to a point. |
+| `SLelement<E>` | A node in a singly linked list. It extends `Element`, so it has everything an `Element` has, plus a `getNext()` pointer to the next node. | `graph.getAdjacencyList(from)` returns the head node of `from`'s edge list, an `SLelement<Edge<Integer, Double>>`. `getValue()` is the `Edge`, `getNext()` is the next node, and `null` means the list is over. |
+| `Edge<K, E2>` | One directed edge: the vertex it goes to and its edge data. It is not an `Element`. | An `Edge<Integer, Double>`. `getTo()` is the ID of the neighboring intersection, and `getEdgeData()` is the road segment's length in meters. The edge doesn't store where it starts, because the adjacency list it's in already tells you that. |
+| `ElementVisualizer` | The drawing settings attached to each `Element`. | It comes back from `getVisualizer()`. The code calls `setColor` on it to color vertices, and `MapLoader` reads `getLocationX()` and `getLocationY()` to save where each vertex is drawn. |
+| `Color` | A BRIDGES RGB color. | `OpenStreetsMap` defines Carolina blue, orange, and red for drawing routes, and `MyFeature` uses colors for its picture. |
+| `Bridges` | The connection to the BRIDGES server, made from the assignment number, username, and API key in `.env`. | `Main` creates it, `MapLoader` uses it to fetch the map, and `Main` uses it to post each picture (`setDataStructure`, `setTitle`, `setDescription`, `visualize`). |
+| `DataSource` | The BRIDGES object that downloads real-world data sets. | `bridges.getDataSource().getOsmData(place, level)` downloads the OpenStreetMap data. Nobody imports it; the call chain returns it. |
+| `OsmData` | The downloaded OpenStreetMap data set. | Only used for `.getGraph()`, which turns the download into the `GraphAdjList`. It also comes back from the call chain without an import. |
 
 - Each **vertex** is an intersection. Its key is an `int` ID, and it holds an
   `OsmVertex` with the intersection's latitude and longitude.
@@ -59,15 +50,11 @@ We will be using the following BRIDGES Classes:
 The map is a BRIDGES `GraphAdjList<Integer, OsmVertex, Double>`, the
 adjacency list:
 
-● | Slot | Type | What we fill in |
-  |---|---|---|
-  | `K` | `Integer` | The vertex's ID, one number per road intersection. Every map lookup uses it: `distance`, `parent` and `steps` are all keyed by this ID, and so is the
-  adjacency list. |
-  | `E1` | `OsmVertex` | The intersection's location, its latitude and longitude. `OpenStreetsMap` uses it to find the intersection closest to a point, such as Sitterson Hall
-  or the student's destination, and BRIDGES uses it to place the vertex when it draws the map. |
-  | `E2` | `Double` | The road segment's length in meters. BFS ignores it. Dijkstra adds these up, and `OpenStreetsMap` totals them to report a route's length. |
-
-
+| Slot | Type | What we fill in |
+|---|---|---|
+| `K` | `Integer` | The vertex's ID, one number per road intersection. Every map lookup uses it: `distance`, `parent` and `steps` are all keyed by this ID, and so is the adjacency list. |
+| `E1` | `OsmVertex` | The intersection's location, its latitude and longitude. `OpenStreetsMap` uses it to find the intersection closest to a point, such as Sitterson Hall or your destination, and BRIDGES uses it to place the vertex when it draws the map. |
+| `E2` | `Double` | The road segment's length in meters. BFS ignores it. Dijkstra adds these up, and `OpenStreetsMap` totals them to report a route's length. |
 
 Here are the calls you need:
 
@@ -164,8 +151,9 @@ Watch the edge order. BRIDGES adds each new edge to the **front** of its
 vertex's list, so a list holds its edges newest first. If you write a list
 front to back, then read the file and add the edges in that order, every list
 comes back reversed. That changes which route BFS picks when two routes tie.
-Write each vertex's list back to front. `Part0Test.readUndoesWrite` checks
-this.
+Write each vertex's list back to front. A test in `Part0Test` that writes a
+graph, reads it back, and compares each vertex's list will catch a reversed
+list.
 
 ### `read(file)`
 
@@ -207,10 +195,10 @@ Print one line saying where the map came from, such as `Loaded the map from
 data/chapel-hill-north-carolina-tertiary.txt.` or `Fetched the map from
 BRIDGES and saved it to data/...`. The check below uses those lines.
 
-**Check your work:** run `Part0Test`. Then run `Main` twice. The first run
-says it saved the map, and the second should load it from the file in well
-under a second. Open the file in `data/` to see the whole graph as plain
-text.
+**Check your work:** write at least three tests in `Part0Test` (see "Writing
+your tests" below) and run them. Then run `Main` twice. The first run says it
+saved the map, and the second should load it from the file in well under a
+second. Open the file in `data/` to see the whole graph as plain text.
 
 ## Part 1: Fewest intersections (30 points)
 
@@ -240,7 +228,7 @@ If `destination` is not the source and has no parent, it was never reached,
 so return an empty list. The route from the source to itself is
 `[source]`.
 
-**Check your work:** run `Part1Test`.
+**Check your work:** write at least three tests in `Part1Test` and run them.
 
 ### Choose your destination
 
@@ -325,11 +313,11 @@ paper first: which vertex settles too early, and which edge makes its
 distance go down afterward? Question 3 of the write-up asks you to walk
 through it.
 
-**Check your work:** run `Part2Test`. Then run `Main`. It prints the Dijkstra
-route and posts two more pictures. Picture 2 shades every intersection by its
-distance from Sitterson, white nearby to black far away. Picture 3 shows both
-routes: BFS in orange, Dijkstra in red, and the intersections they share in
-purple.
+**Check your work:** write at least three tests in `Part2Test` and run them.
+Then run `Main`. It prints the Dijkstra route and posts two more pictures.
+Picture 2 shades every intersection by its distance from Sitterson, white
+nearby to black far away. Picture 3 shows both routes: BFS in orange, Dijkstra
+in red, and the intersections they share in purple.
 
 ## Part 3: Your feature (25 points)
 
@@ -373,12 +361,13 @@ Answer the four questions in `writeup.md` with the numbers from your
 destination. Put your BRIDGES URL at the top: your pictures live at
 `https://bridges-cs.herokuapp.com/assignments/6/yourusername`.
 
-## Early bonus (+10)
+## Early bonus (+12.5)
 
 Submit your code to **Final Project** at least 72 hours before the deadline,
-by 5:00pm on Saturday, November 21, and the autograder adds 10 points. The
-bonus goes by the time of each code submission, checked on its own, so a
-resubmission after that time does not earn it, even if an earlier one did.
+by 5:00pm on Saturday, November 21, and the autograder adds 12.5 points, 10%
+of the 125-point code assignment. The bonus goes by the time of each code
+submission, checked on its own, so a resubmission after that time does not
+earn it, even if an earlier one did.
 
 ## Looking at the pictures
 
@@ -399,15 +388,30 @@ the write-up ask you to explain yours. Submit your AI conversations with your
 write-up, as on every assignment. The course treats undisclosed AI use as
 falsifying the submission.
 
-## Testing your code
+## Writing your tests
 
 `src/test/java/comp210/a6` has one test file per part: `Part0Test`,
-`Part1Test`, and `Part2Test`. Right-click a file and choose **Run**. Run each
-one when you finish its part. They are a sample of what Gradescope runs.
-Gradescope also checks your code against random graphs, times `bfs` on 50,000
-vertices, and counts how many times `dijkstra` walks each vertex's edges.
-The samples cover part of what Gradescope checks, so add tests of your own.
-Small graphs you can draw on paper make the best tests.
+`Part1Test`, and `Part2Test`. Each starts with a few helpers that build small
+graphs and no tests. Write at least three JUnit tests in each file as you
+finish its part, then right-click the file and choose **Run**.
+
+Each file is worth 3 points of its part. The autograder counts the tests
+JUnit finds in each file, and three or more earns the 3 points. It also runs
+your tests on your code and lists which ones pass. That list is not scored,
+because a bug in your code already costs points in the part's other tests.
+
+The best tests use graphs small enough to draw on paper, so you know the right
+answer before you run the code. Some ideas:
+
+| File | Ideas |
+|---|---|
+| `Part0Test` | the header lines `write` puts first; `read` on a short file you type yourself; a file that ends early; writing a graph and reading it back, list order included |
+| `Part1Test` | `bfs` on a line of vertices; a graph where the route with fewer steps is not the first one found; a one-way edge; `routeTo` for a vertex `bfs` never reached |
+| `Part2Test` | `compareTo` on two close distances such as 0.25 and 0.75; a graph where the cheapest route has more steps; a vertex `dijkstra` cannot reach; your `negativeEdgeGraph` failing check 2 |
+
+Gradescope also runs its own tests. It checks your code against random
+graphs, times `bfs` on 50,000 vertices, and counts how many times `dijkstra`
+walks each vertex's edges.
 
 ## What to submit
 
@@ -419,11 +423,16 @@ Upload your code to **Final Project**:
 2. `RoutePlanner.java`
 3. `Pair.java`
 4. `MyFeature.java`
+5. `Part0Test.java`
+6. `Part1Test.java`
+7. `Part2Test.java`
 
 The autograder grades Parts 0 to 2 as soon as you submit, and you can
 resubmit as many times as you like before the deadline. If `MyFeature.java`
 does not compile, the autograder sets it aside so it cannot cost you Parts 0
-to 2, and your instructor grades Part 3 from the file you uploaded.
+to 2, and your instructor grades Part 3 from the file you uploaded. A test
+file that does not compile is set aside too, and it costs you only that
+file's 3 points.
 
 Upload `writeup.md` (or a PDF of it) and your AI conversations to **Final
 Project Write-up**, with your BRIDGES URL at the top.
@@ -436,11 +445,11 @@ every file you upload for one.
 
 | Part | Points | Gradescope assignment | Graded by |
 |---|---|---|---|
-| Part 0: `MapLoader` | 20 | Final Project | autograder |
-| Part 1: `bfs` and `routeTo` | 30 | Final Project | autograder |
-| Part 2: `compareTo`, `dijkstra`, and `negativeEdgeGraph` | 50 | Final Project | autograder |
+| Part 0: `MapLoader`, including 3 for your `Part0Test` | 20 | Final Project | autograder |
+| Part 1: `bfs` and `routeTo`, including 3 for your `Part1Test` | 30 | Final Project | autograder |
+| Part 2: `compareTo`, `dijkstra`, and `negativeEdgeGraph`, including 3 for your `Part2Test` | 50 | Final Project | autograder |
 | Part 3: your feature | 25 | Final Project | instructor |
-| Early bonus: submit at least 72 hours before the deadline | +10 | Final Project | autograder |
+| Early bonus: submit at least 72 hours before the deadline | +12.5 | Final Project | autograder |
 | BRIDGES URL shows all four pictures under your account | 5 | Final Project Write-up | instructor |
 | Write-up questions | 20 | Final Project Write-up | instructor |
 
@@ -462,5 +471,8 @@ your cloned folder/          <- open THIS folder in IntelliJ
     Main.java                 runs it all; set your destination at the top
     OpenStreetsMap.java       map helpers and drawing code
     BridgesConfig.java        reads .env, same as A5
-  
+  src/test/java/comp210/a6/
+    Part0Test.java            Part 0, yours: at least three tests
+    Part1Test.java            Part 1, yours: at least three tests
+    Part2Test.java            Part 2, yours: at least three tests
 ```
