@@ -5,28 +5,47 @@
 | | |
 |---|---|
 | Released | Tuesday, November 10 |
-| Due | Tuesday, November 24, 5:00pm. The final project has no late window. |
-| Points | 150, plus a 10-point early bonus |
+| Due | Tuesday, November 24, 5:00pm. |
+| Points | 150, plus a 10% early bonus |
 | AI | Rung 3, AI as Collaborator. See "Using AI" below. |
 | Collaboration | Solo. Follows the syllabus policy. Never share your API key. |
 
 You walk out of Sitterson Hall and need to get across town. A map app answers
 in a second. In this project you build the part of that app that does the
 answering, on Chapel Hill's real streets: 4,806 intersections and the roads
-between them, from OpenStreetMap.
+between them using the OpenStreetMap API, and some light caching.
 
 You find two routes to a destination you choose. Breadth-first search finds
 the route through the fewest intersections, and Dijkstra's algorithm finds
-the route with the fewest meters. They are not always the same route, and
+the route with the least distance. They are not always the same route, and
 your write-up explains why. Then you add a feature of your own design.
 
 This project adapts BRIDGES assignment #9, "Shortest Path on Real Maps," from
 UNC Charlotte.
 
-## How the map is stored
+We will be using the following BRIDGES Classes:
 
-The map is a BRIDGES `GraphAdjList<Integer, OsmVertex, Double>`, the
-adjacency list from the graphs lecture:
+| Class | What it is | In the final project |
+  |---|---|---|
+  | `GraphAdjList<K, E1, E2>` | BRIDGES' graph, stored as adjacency lists: a map from each vertex ID to its `Element`, and from each vertex ID to a linked list of its outgoing edges. | The Chapel Hill
+  road map, a `GraphAdjList<Integer, OsmVertex, Double>`. Students call `getVertices()`, `getAdjacencyList(from)`, `addVertex`, `addEdge`, and `getEdgeData(from, to)` on it. |
+  | `Element<E>` | A BRIDGES wrapper around one piece of data, plus drawing information (color, size, location). It is the parent class of `SLelement`. | Each vertex is an `Element<OsmVertex>`.
+  `graph.getVertices()` maps each vertex ID to its `Element`, and `getValue()` returns the `OsmVertex` with the latitude and longitude. `getVisualizer()` is the drawing side: `MyFeature` uses it to color
+  vertices. |
+  | `OsmVertex` | The data for one OpenStreetMap intersection. | The value inside each vertex's `Element`. `getLatitude()` and `getLongitude()` give its location. `MapLoader` saves and rebuilds these,
+  and `OpenStreetsMap` uses them to find the intersection closest to a point. |
+  | `SLelement<E>` | A node in a singly linked list. It extends `Element`, so it has everything an `Element` has, plus a `getNext()` pointer to the next node. | `graph.getAdjacencyList(from)` returns the
+  head node of `from`'s edge list, an `SLelement<Edge<Integer, Double>>`. `getValue()` is the `Edge`, `getNext()` is the next node, and `null` means the list is over. |
+  | `Edge<K, E2>` | One directed edge: the vertex it goes to and its edge data. It is not an `Element`. | An `Edge<Integer, Double>`. `getTo()` is the ID of the neighboring intersection, and
+  `getEdgeData()` is the road segment's length in meters. The edge doesn't store where it starts, because the adjacency list it's in already tells you that. |
+  | `ElementVisualizer` | The drawing settings attached to each `Element`. | It comes back from `getVisualizer()`. The code calls `setColor` on it to color vertices, and `MapLoader` reads
+  `getLocationX()` and `getLocationY()` to save where each vertex is drawn. |
+  | `Color` | A BRIDGES RGB color. | `OpenStreetsMap` defines Carolina blue, orange, and red for drawing routes, and `MyFeature` uses colors for its picture. |
+  | `Bridges` | The connection to the BRIDGES server, made from the assignment number, username, and API key in `.env`. | `Main` creates it, `MapLoader` uses it to fetch the map, and `Main` uses it to
+  post each picture (`setDataStructure`, `setTitle`, `setDescription`, `visualize`). |
+  | `DataSource` | The BRIDGES object that downloads real-world data sets. | `bridges.getDataSource().getOsmData(place, level)` downloads the OpenStreetMap data. Nobody imports it; the call chain returns
+  it. |
+  | `OsmData` | The downloaded OpenStreetMap data set. | Only used for `.getGraph()`, which turns the download into the `GraphAdjList`. It also comes back from the call chain without an import. |
 
 - Each **vertex** is an intersection. Its key is an `int` ID, and it holds an
   `OsmVertex` with the intersection's latitude and longitude.
@@ -34,6 +53,21 @@ adjacency list from the graphs lecture:
   the stretch's length in meters.
 - Edges are **directed**. A two-way street is two edges, one each way, and a
   one-way street is one edge.
+
+## How the map is stored
+
+The map is a BRIDGES `GraphAdjList<Integer, OsmVertex, Double>`, the
+adjacency list:
+
+● | Slot | Type | What we fill in |
+  |---|---|---|
+  | `K` | `Integer` | The vertex's ID, one number per road intersection. Every map lookup uses it: `distance`, `parent` and `steps` are all keyed by this ID, and so is the
+  adjacency list. |
+  | `E1` | `OsmVertex` | The intersection's location, its latitude and longitude. `OpenStreetsMap` uses it to find the intersection closest to a point, such as Sitterson Hall
+  or the student's destination, and BRIDGES uses it to place the vertex when it draws the map. |
+  | `E2` | `Double` | The road segment's length in meters. BFS ignores it. Dijkstra adds these up, and `OpenStreetsMap` totals them to report a route's length. |
+
+
 
 Here are the calls you need:
 
@@ -315,7 +349,7 @@ Here is an example of the size we have in mind. Its question is off limits
 for your own feature, because it is the one in the course's sample solution.
 Its techniques are yours to use in a different feature:
 
-> **Nearest dining hall.** Color each intersection by whether Lenoir or
+> **Nearest dining hall.** (Don't use this one) Color each intersection by whether Lenoir or
 > Chase is the shorter walk. Dijkstra measures outward from its source, but
 > this question is about walking toward a hall, so the sample turns every
 > edge around first. It also adds one extra vertex with a zero-length edge to
@@ -323,12 +357,6 @@ Its techniques are yours to use in a different feature:
 
 Pick a different idea. Some places to start, which you can take, change, or
 replace with your own:
-
-| Idea | The question it answers |
-|---|---|
-| A 15-minute walk | Which intersections can you reach from Sitterson within 1,200 meters, and how many are there? |
-| Road closed | If one road segment near campus closes, what is the detour, and how many extra meters does it cost? |
-| A stop on the way | What is the shortest route from Sitterson to your destination that passes through a coffee shop? |
 
 Use `OpenStreetsMap.fadeAll`, `colorRoute`, and `styleRoot` to color the
 picture, and `OpenStreetsMap.getClosestVertex` to turn a latitude and
@@ -364,7 +392,7 @@ The map is big enough that BRIDGES draws it in its large-graph viewer:
 
 ## Using AI
 
-The final project is at Rung 3, AI as Collaborator. You can hand the agent a
+The final project is at Rung 3, AI as Collaborator. You can hand LearnWithAI a
 clearly specified piece, such as "write `read` for this file format," and
 audit what comes back. You still own every design decision, and Part 3 and
 the write-up ask you to explain yours. Submit your AI conversations with your
@@ -434,8 +462,5 @@ your cloned folder/          <- open THIS folder in IntelliJ
     Main.java                 runs it all; set your destination at the top
     OpenStreetsMap.java       map helpers and drawing code
     BridgesConfig.java        reads .env, same as A5
-  src/test/java/comp210/a6/
-    Part0Test.java            run after Part 0
-    Part1Test.java            run after Part 1
-    Part2Test.java            run after Part 2
+  
 ```
