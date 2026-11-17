@@ -64,4 +64,82 @@ class Part0Test {
     //     MapLoader.write(threeCorners(), "Chapel Hill, North Carolina", "tertiary", file);
     //     assertEquals("place Chapel Hill, North Carolina", Files.readAllLines(file).get(0));
     // }
+
+    @Test
+    void writeTest() throws IOException {
+        GraphAdjList<Integer, OsmVertex, Double> graph = new GraphAdjList<>();
+
+        graph.addVertex(0, new OsmVertex(35.0, -79.0));
+        graph.getVertex(0).setLocation(10.0, 20.0);
+
+        graph.addVertex(1, new OsmVertex(36.0, -78.0));
+        graph.getVertex(1).setLocation(30.0, 40.0);
+
+        graph.addEdge(0, 1, 2.0);
+
+        Path file = dir.resolve("map.txt");
+        MapLoader.write(graph, "test", "tertiary", file);
+
+        List<String> expected = List.of(
+                "place test",
+                "level tertiary",
+                "vertices 2",
+                "0 35.0 -79.0 10.0 20.0",
+                "1 36.0 -78.0 30.0 40.0",
+                "edges 1",
+                "0 1 2.0"
+        );
+
+        assertEquals(expected, Files.readAllLines(file));
+    }
+
+    @Test
+    void readTest() throws IOException {
+        Path dir = Files.createTempDirectory("part0-test");
+        Path file = dir.resolve("map.txt");
+        Files.write(file, List.of(
+                "place test",
+                "level tertiary",
+                "vertices 2",
+                "0 35.0 -79.0 10.0 20.0"
+        ));
+        try {
+            assertThrows(IOException.class, () -> MapLoader.read(file));
+        } finally {
+            Files.deleteIfExists(file);
+            Files.deleteIfExists(dir);
+        }
+    }
+
+    @Test
+    void loadTest() throws IOException {
+        Path dir = Files.createTempDirectory("load-test");
+        String previousDir = System.getProperty("dotenv.dir");
+        System.setProperty("dotenv.dir", dir.toString());
+        Path file = MapLoader.cacheFile("test", "tertiary");
+
+        try {
+            Files.createDirectories(file.getParent());
+            String content = "place test\n"
+                    + "level tertiary\n"
+                    + "vertices 1\n"
+                    + "0 35.0 -79.0 10.0 20.0\n"
+                    + "edges 0\n";
+            Files.writeString(file, content);
+            GraphAdjList<Integer, OsmVertex, Double> graph =
+                    MapLoader.load(null, "test", "tertiary");
+            assertEquals(1, graph.getVertices().size());
+            assertEquals(35.0, graph.getVertexData(0).getLatitude());
+        } finally {
+            if (previousDir == null) {
+                System.clearProperty("dotenv.dir");
+            } else {
+                System.setProperty("dotenv.dir", previousDir);
+            }
+            Files.deleteIfExists(file);
+            Files.deleteIfExists(file.getParent());
+            Files.deleteIfExists(dir);
+        }
+    }
+
 }

@@ -1,9 +1,10 @@
 package comp210.a6;
 
+import bridges.base.Edge;
 import bridges.base.GraphAdjList;
+import bridges.base.SLelement;
 
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 /**
  * Route finding on a road graph. Vertex keys are ints, and each edge holds
@@ -31,7 +32,24 @@ public class RoutePlanner {
      */
     public static void bfs(GraphAdjList<Integer, ?, Double> graph, int source,
                            HashMap<Integer, Integer> steps, HashMap<Integer, Integer> parent) {
-        throw new UnsupportedOperationException("Part 1: write RoutePlanner.bfs");
+        Deque<Integer> queue = new ArrayDeque<>();
+        queue.add(source);
+        steps.put(source, 0);
+
+        while (!queue.isEmpty()) {
+            int current = queue.removeFirst();
+            SLelement<Edge<Integer, Double>> node = graph.getAdjacencyList(current);
+            while (node != null) {
+                int neighbor = node.getValue().getTo();
+                if (!steps.containsKey(neighbor)) {
+                    steps.put(neighbor, steps.get(current) + 1);
+                    parent.put(neighbor, current);
+                    queue.addLast(neighbor);
+                }
+                node = node.getNext();
+            }
+        }
+        //throw new UnsupportedOperationException("Part 1: write RoutePlanner.bfs");
     }
 
     /**
@@ -40,7 +58,21 @@ public class RoutePlanner {
      * destination. Returns an empty list when destination was not reached.
      */
     public static List<Integer> routeTo(HashMap<Integer, Integer> parent, int source, int destination) {
-        throw new UnsupportedOperationException("Part 1: write RoutePlanner.routeTo");
+        List<Integer> route = new ArrayList<>();
+
+        if (destination != source && !parent.containsKey(destination)) {
+            return route;
+        }
+
+        // travel upwards till null
+        Integer current = destination;
+        while (current != null) {
+            route.add(current);
+            current = parent.get(current);
+        }
+        Collections.reverse(route);
+        return route;
+        //throw new UnsupportedOperationException("Part 1: write RoutePlanner.routeTo");
     }
 
     // ------------------------------------------------------------------
@@ -66,7 +98,53 @@ public class RoutePlanner {
      */
     public static void dijkstra(GraphAdjList<Integer, ?, Double> graph, int source,
                                 HashMap<Integer, Double> distance, HashMap<Integer, Integer> parent) {
-        throw new UnsupportedOperationException("Part 2: write RoutePlanner.dijkstra");
+        Queue<Pair<Integer,Double>> queue = new PriorityQueue<>();
+        HashSet<Integer> settled = new HashSet<>();
+        double lastDistance = Double.NEGATIVE_INFINITY;
+
+        for (Integer from : graph.getVertices().keySet()) {
+            distance.put(from, Double.MAX_VALUE);
+        }
+        distance.put(source, 0.0);
+        queue.add(new Pair<>(source, 0.0));
+
+        while (!queue.isEmpty()) {
+            Pair<Integer, Double> curr_pair = queue.poll();
+            int current = curr_pair.getKey();
+            double currentDistance = curr_pair.getValue();
+            if (currentDistance > distance.get(current)) {
+                continue; // stale check
+            }
+
+            if (settled.contains(current)) {
+                continue;
+            }
+
+            if (currentDistance < lastDistance) {
+                throw new IllegalStateException("Check 1: " + current + " is settled with distance " + currentDistance + " after a vertex with distance " + lastDistance);
+            }
+
+            settled.add(current);
+            lastDistance = currentDistance;
+            SLelement<Edge<Integer, Double>> node = graph.getAdjacencyList(curr_pair.getKey());
+            
+            while (node != null) {
+                Edge<Integer, Double> edge = node.getValue();
+                int neighbor = edge.getTo();
+                double candidate = currentDistance + edge.getEdgeData();
+                if (candidate < distance.get(neighbor)) {
+                    if (settled.contains(neighbor)) {
+                        throw new IllegalStateException("Check 2: " + neighbor + " is already settled but a shorter distance is found");
+                    }
+                    distance.put(neighbor, candidate);
+                    parent.put(neighbor, current);
+                    queue.add(new Pair<>(neighbor, candidate));
+                }
+                node = node.getNext();
+            }
+        }
+
+        //throw new UnsupportedOperationException("Part 2: write RoutePlanner.dijkstra");
     }
 
     /**
@@ -75,6 +153,16 @@ public class RoutePlanner {
      * find a shorter route to it through the negative edge.
      */
     public static GraphAdjList<Integer, String, Double> negativeEdgeGraph() {
-        throw new UnsupportedOperationException("Part 2: write RoutePlanner.negativeEdgeGraph");
+        GraphAdjList<Integer, String, Double> graph = new GraphAdjList<>();
+        graph.addVertex(0, "Source");
+        graph.addVertex(1, "Node 1");
+        graph.addVertex(2, "Node 2");
+
+        graph.addEdge(0, 1, 2.0);
+        graph.addEdge(0, 2, 5.0);
+        graph.addEdge(2, 1, -4.0);
+
+        return graph;
+        // throw new UnsupportedOperationException("Part 2: write RoutePlanner.negativeEdgeGraph");
     }
 }

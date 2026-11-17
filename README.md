@@ -2,12 +2,12 @@
 
 **COMP210, Fall 2026**
 
-| | |
-|---|---|
-| Released | Tuesday, November 10 |
-| Due | Tuesday, November 24, 5:00pm. |
-| Points | 150, plus a 10% early bonus (12.5 points) |
-| AI | Rung 3, AI as Collaborator. See "Using AI" below. |
+|               |                                                              |
+| ------------- | ------------------------------------------------------------ |
+| Released      | Tuesday, November 10                                         |
+| Due           | Tuesday, November 24, 5:00pm.                                |
+| Points        | 150, plus a 10% early bonus (12.5 points)                    |
+| AI            | Rung 3, AI as Collaborator. See "Using AI" below.            |
 | Collaboration | Solo. Follows the syllabus policy. Never share your API key. |
 
 You walk out of Sitterson Hall and need to get across town. A map app answers
@@ -25,18 +25,18 @@ UNC Charlotte.
 
 We will be using the following BRIDGES Classes:
 
-| Class | What it is | In the final project |
-|---|---|---|
-| `GraphAdjList<K, E1, E2>` | BRIDGES' graph, stored as adjacency lists: a map from each vertex ID to its `Element`, and from each vertex ID to a linked list of its outgoing edges. | The Chapel Hill road map, a `GraphAdjList<Integer, OsmVertex, Double>`. You call `getVertices()`, `getAdjacencyList(from)`, `addVertex`, `addEdge`, and `getEdgeData(from, to)` on it. |
-| `Element<E>` | A BRIDGES wrapper around one piece of data, plus drawing information (color, size, location). It is the parent class of `SLelement`. | Each vertex is an `Element<OsmVertex>`. `graph.getVertices()` maps each vertex ID to its `Element`, and `getValue()` returns the `OsmVertex` with the latitude and longitude. `getVisualizer()` is the drawing side: `MyFeature` uses it to color vertices. |
-| `OsmVertex` | The data for one OpenStreetMap intersection. | The value inside each vertex's `Element`. `getLatitude()` and `getLongitude()` give its location. `MapLoader` saves and rebuilds these, and `OpenStreetsMap` uses them to find the intersection closest to a point. |
-| `SLelement<E>` | A node in a singly linked list. It extends `Element`, so it has everything an `Element` has, plus a `getNext()` pointer to the next node. | `graph.getAdjacencyList(from)` returns the head node of `from`'s edge list, an `SLelement<Edge<Integer, Double>>`. `getValue()` is the `Edge`, `getNext()` is the next node, and `null` means the list is over. |
-| `Edge<K, E2>` | One directed edge: the vertex it goes to and its edge data. It is not an `Element`. | An `Edge<Integer, Double>`. `getTo()` is the ID of the neighboring intersection, and `getEdgeData()` is the road segment's length in meters. The edge doesn't store where it starts, because the adjacency list it's in already tells you that. |
-| `ElementVisualizer` | The drawing settings attached to each `Element`. | It comes back from `getVisualizer()`. The code calls `setColor` on it to color vertices, and `MapLoader` reads `getLocationX()` and `getLocationY()` to save where each vertex is drawn. |
-| `Color` | A BRIDGES RGB color. | `OpenStreetsMap` defines Carolina blue, orange, and red for drawing routes, and `MyFeature` uses colors for its picture. |
-| `Bridges` | The connection to the BRIDGES server, made from the assignment number, username, and API key in `.env`. | `Main` creates it, `MapLoader` uses it to fetch the map, and `Main` uses it to post each picture (`setDataStructure`, `setTitle`, `setDescription`, `visualize`). |
-| `DataSource` | The BRIDGES object that downloads real-world data sets. | `bridges.getDataSource().getOsmData(place, level)` downloads the OpenStreetMap data. Nobody imports it; the call chain returns it. |
-| `OsmData` | The downloaded OpenStreetMap data set. | Only used for `.getGraph()`, which turns the download into the `GraphAdjList`. It also comes back from the call chain without an import. |
+| Class                       | What it is                                                                                                                                               | In the final project                                                                                                                                                                                                                                                      |
+| --------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `GraphAdjList<K, E1, E2>` | BRIDGES' graph, stored as adjacency lists: a map from each vertex ID to its `Element`, and from each vertex ID to a linked list of its outgoing edges. | The Chapel Hill road map, a `GraphAdjList<Integer, OsmVertex, Double>`. You call `getVertices()`, `getAdjacencyList(from)`, `addVertex`, `addEdge`, and `getEdgeData(from, to)` on it.                                                                        |
+| `Element<E>`              | A BRIDGES wrapper around one piece of data, plus drawing information (color, size, location). It is the parent class of `SLelement`.                   | Each vertex is an `Element<OsmVertex>`. `graph.getVertices()` maps each vertex ID to its `Element`, and `getValue()` returns the `OsmVertex` with the latitude and longitude. `getVisualizer()` is the drawing side: `MyFeature` uses it to color vertices. |
+| `OsmVertex`               | The data for one OpenStreetMap intersection.                                                                                                             | The value inside each vertex's `Element`. `getLatitude()` and `getLongitude()` give its location. `MapLoader` saves and rebuilds these, and `OpenStreetsMap` uses them to find the intersection closest to a point.                                             |
+| `SLelement<E>`            | A node in a singly linked list. It extends `Element`, so it has everything an `Element` has, plus a `getNext()` pointer to the next node.          | `graph.getAdjacencyList(from)` returns the head node of `from`'s edge list, an `SLelement<Edge<Integer, Double>>`. `getValue()` is the `Edge`, `getNext()` is the next node, and `null` means the list is over.                                             |
+| `Edge<K, E2>`             | One directed edge: the vertex it goes to and its edge data. It is not an `Element`.                                                                    | An `Edge<Integer, Double>`. `getTo()` is the ID of the neighboring intersection, and `getEdgeData()` is the road segment's length in meters. The edge doesn't store where it starts, because the adjacency list it's in already tells you that.                     |
+| `ElementVisualizer`       | The drawing settings attached to each `Element`.                                                                                                       | It comes back from `getVisualizer()`. The code calls `setColor` on it to color vertices, and `MapLoader` reads `getLocationX()` and `getLocationY()` to save where each vertex is drawn.                                                                        |
+| `Color`                   | A BRIDGES RGB color.                                                                                                                                     | `OpenStreetsMap` defines Carolina blue, orange, and red for drawing routes, and `MyFeature` uses colors for its picture.                                                                                                                                              |
+| `Bridges`                 | The connection to the BRIDGES server, made from the assignment number, username, and API key in `.env`.                                                | `Main` creates it, `MapLoader` uses it to fetch the map, and `Main` uses it to post each picture (`setDataStructure`, `setTitle`, `setDescription`, `visualize`).                                                                                           |
+| `DataSource`              | The BRIDGES object that downloads real-world data sets.                                                                                                  | `bridges.getDataSource().getOsmData(place, level)` downloads the OpenStreetMap data. Nobody imports it; the call chain returns it.                                                                                                                                      |
+| `OsmData`                 | The downloaded OpenStreetMap data set.                                                                                                                   | Only used for `.getGraph()`, which turns the download into the `GraphAdjList`. It also comes back from the call chain without an import.                                                                                                                              |
 
 - Each **vertex** is an intersection. Its key is an `int` ID, and it holds an
   `OsmVertex` with the intersection's latitude and longitude.
@@ -50,21 +50,21 @@ We will be using the following BRIDGES Classes:
 The map is a BRIDGES `GraphAdjList<Integer, OsmVertex, Double>`, the
 adjacency list:
 
-| Slot | Type | What we fill in |
-|---|---|---|
-| `K` | `Integer` | The vertex's ID, one number per road intersection. Every map lookup uses it: `distance`, `parent` and `steps` are all keyed by this ID, and so is the adjacency list. |
+| Slot   | Type          | What we fill in                                                                                                                                                                                                                             |
+| ------ | ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `K`  | `Integer`   | The vertex's ID, one number per road intersection. Every map lookup uses it: `distance`, `parent` and `steps` are all keyed by this ID, and so is the adjacency list.                                                                 |
 | `E1` | `OsmVertex` | The intersection's location, its latitude and longitude. `OpenStreetsMap` uses it to find the intersection closest to a point, such as Sitterson Hall or your destination, and BRIDGES uses it to place the vertex when it draws the map. |
-| `E2` | `Double` | The road segment's length in meters. BFS ignores it. Dijkstra adds these up, and `OpenStreetsMap` totals them to report a route's length. |
+| `E2` | `Double`    | The road segment's length in meters. BFS ignores it. Dijkstra adds these up, and `OpenStreetsMap` totals them to report a route's length.                                                                                                 |
 
 Here are the calls you need:
 
-| Call | What it gives you |
-|---|---|
-| `graph.getVertices()` | a `HashMap` from each vertex ID to its `Element<OsmVertex>` |
-| `graph.getVertexData(id)` | the `OsmVertex`: `getLatitude()`, `getLongitude()` |
-| `graph.getVertex(id).getVisualizer()` | where BRIDGES draws the vertex: `getLocationX()`, `getLocationY()` |
-| `graph.getAdjacencyList(id)` | the first node of that vertex's edge list, or `null` if it has no edges |
-| `graph.addVertex(id, data)` and `graph.addEdge(from, to, length)` | build a graph |
+| Call                                                                  | What it gives you                                                         |
+| --------------------------------------------------------------------- | ------------------------------------------------------------------------- |
+| `graph.getVertices()`                                               | a `HashMap` from each vertex ID to its `Element<OsmVertex>`           |
+| `graph.getVertexData(id)`                                           | the `OsmVertex`: `getLatitude()`, `getLongitude()`                  |
+| `graph.getVertex(id).getVisualizer()`                               | where BRIDGES draws the vertex: `getLocationX()`, `getLocationY()`    |
+| `graph.getAdjacencyList(id)`                                        | the first node of that vertex's edge list, or `null` if it has no edges |
+| `graph.addVertex(id, data)` and `graph.addEdge(from, to, length)` | build a graph                                                             |
 
 `getAdjacencyList` hands you a singly linked list, so you walk it the same
 way you walked your own linked lists in Module 2. `SLelement`, `Edge`, and
@@ -123,13 +123,13 @@ edges 7068
 ...
 ```
 
-| Line | Holds |
-|---|---|
-| `place ...` and `level ...` | what `load` was asked for |
-| `vertices N` | how many vertex lines follow |
-| a vertex line | ID, latitude, longitude, map x, map y |
-| `edges M` | how many edge lines follow |
-| an edge line | from, to, length in meters |
+| Line                            | Holds                                 |
+| ------------------------------- | ------------------------------------- |
+| `place ...` and `level ...` | what `load` was asked for           |
+| `vertices N`                  | how many vertex lines follow          |
+| a vertex line                   | ID, latitude, longitude, map x, map y |
+| `edges M`                     | how many edge lines follow            |
+| an edge line                    | from, to, length in meters            |
 
 The two counts let `read` check that the file is complete.
 
@@ -191,9 +191,7 @@ If `cacheFile(place, level)` exists and is not empty (`Files.exists`,
 bridges.getDataSource().getOsmData(place, level).getGraph()
 ```
 
-Print one line saying where the map came from, such as `Loaded the map from
-data/chapel-hill-north-carolina-tertiary.txt.` or `Fetched the map from
-BRIDGES and saved it to data/...`. The check below uses those lines.
+Print one line saying where the map came from, such as `Loaded the map from data/chapel-hill-north-carolina-tertiary.txt.` or `Fetched the map from BRIDGES and saved it to data/...`. The check below uses those lines.
 
 **Check your work:** write at least three tests in `Part0Test` (see "Writing
 your tests" below) and run them. Then run `Main` twice. The first run says it
@@ -292,15 +290,14 @@ distance is final.** You make your code check that promise as it runs. Keep
 a `HashSet` of settled vertices and the distance of the vertex settled last,
 and add two checks:
 
-| Check | What it enforces | When it fails |
-|---|---|---|
-| Check 1 | Vertices settle in order of distance. | You settle a vertex whose distance is smaller than the distance of the vertex settled before it. |
-| Check 2 | A settled vertex never gets a shorter distance. | Relaxing an edge would lower the distance of a vertex that is already settled. |
+| Check   | What it enforces                                | When it fails                                                                                    |
+| ------- | ----------------------------------------------- | ------------------------------------------------------------------------------------------------ |
+| Check 1 | Vertices settle in order of distance.           | You settle a vertex whose distance is smaller than the distance of the vertex settled before it. |
+| Check 2 | A settled vertex never gets a shorter distance. | Relaxing an edge would lower the distance of a vertex that is already settled.                   |
 
 When a check fails, throw an `IllegalStateException` whose message starts
 with `"Check 1"` or `"Check 2"` and names the vertex, for example
-`"Check 2 failed: vertex 7 was settled at distance 40.0, but the edge from 3
-gives it 35.0"`.
+`"Check 2 failed: vertex 7 was settled at distance 40.0, but the edge from 3 gives it 35.0"`.
 
 On a correct Dijkstra with real road lengths, neither check ever fails. They
 fail when the algorithm is wrong or when a graph breaks the algorithm's rules.
@@ -403,10 +400,10 @@ because a bug in your code already costs points in the part's other tests.
 The best tests use graphs small enough to draw on paper, so you know the right
 answer before you run the code. Some ideas:
 
-| File | Ideas |
-|---|---|
-| `Part0Test` | the header lines `write` puts first; `read` on a short file you type yourself; a file that ends early; writing a graph and reading it back, list order included |
-| `Part1Test` | `bfs` on a line of vertices; a graph where the route with fewer steps is not the first one found; a one-way edge; `routeTo` for a vertex `bfs` never reached |
+| File          | Ideas                                                                                                                                                                                       |
+| ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `Part0Test` | the header lines `write` puts first; `read` on a short file you type yourself; a file that ends early; writing a graph and reading it back, list order included                         |
+| `Part1Test` | `bfs` on a line of vertices; a graph where the route with fewer steps is not the first one found; a one-way edge; `routeTo` for a vertex `bfs` never reached                          |
 | `Part2Test` | `compareTo` on two close distances such as 0.25 and 0.75; a graph where the cheapest route has more steps; a vertex `dijkstra` cannot reach; your `negativeEdgeGraph` failing check 2 |
 
 Gradescope also runs its own tests. It checks your code against random
@@ -443,15 +440,15 @@ every file you upload for one.
 
 ## Grading
 
-| Part | Points | Gradescope assignment | Graded by |
-|---|---|---|---|
-| Part 0: `MapLoader`, including 3 for your `Part0Test` | 20 | Final Project | autograder |
-| Part 1: `bfs` and `routeTo`, including 3 for your `Part1Test` | 30 | Final Project | autograder |
-| Part 2: `compareTo`, `dijkstra`, and `negativeEdgeGraph`, including 3 for your `Part2Test` | 50 | Final Project | autograder |
-| Part 3: your feature | 25 | Final Project | instructor |
-| Early bonus: submit at least 72 hours before the deadline | +12.5 | Final Project | autograder |
-| BRIDGES URL shows all four pictures under your account | 5 | Final Project Write-up | instructor |
-| Write-up questions | 20 | Final Project Write-up | instructor |
+| Part                                                                                               | Points | Gradescope assignment  | Graded by  |
+| -------------------------------------------------------------------------------------------------- | ------ | ---------------------- | ---------- |
+| Part 0: `MapLoader`, including 3 for your `Part0Test`                                          | 20     | Final Project          | autograder |
+| Part 1: `bfs` and `routeTo`, including 3 for your `Part1Test`                                | 30     | Final Project          | autograder |
+| Part 2: `compareTo`, `dijkstra`, and `negativeEdgeGraph`, including 3 for your `Part2Test` | 50     | Final Project          | autograder |
+| Part 3: your feature                                                                               | 25     | Final Project          | instructor |
+| Early bonus: submit at least 72 hours before the deadline                                          | +12.5  | Final Project          | autograder |
+| BRIDGES URL shows all four pictures under your account                                             | 5      | Final Project Write-up | instructor |
+| Write-up questions                                                                                 | 20     | Final Project Write-up | instructor |
 
 ## Files
 
