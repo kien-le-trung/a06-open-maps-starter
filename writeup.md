@@ -3,7 +3,7 @@
 **Name:** Kien Le
 **Onyen:** kientrle
 **BRIDGES URL:** http://bridges-cs.herokuapp.com/assignments/6/kientrle
-**Destination (DESTINATION_NAME in Main.java):**
+**Destination (DESTINATION_NAME in Main.java):** Trader Joe's
 
 Four questions, 20 points, plus 5 points for a BRIDGES URL that shows all four pictures. A paragraph or two each. Use the numbers your program printed
 for your destination, and where a question asks for a number, show where it
@@ -28,12 +28,12 @@ If your two routes are the same, explain how that can happen. Then pick a
 second destination where they differ, and report its numbers too.
 
 ```
-BFS route:      54 steps, 7220 m (4059 intersections reachable)
-Dijkstra route: 55 steps, 6496 m
+BFS route:      71 steps, 7875 m (4059 intersections reachable)
+Dijkstra route: 80 steps, 6826 m
 
-The two routes split right at Sitterson, and meet again at Raleigh Road
+The two routes split right at the Franklin-Raleigh Street corner, and meet again at Highway 501 (near Shake Shack)
 
-BFS minimizes the number of steps we take (54 < 55). Dijkstra minimizes the number of meters we have to walk (6496 < 7220)
+BFS minimizes the number of steps we take (71 < 80). Dijkstra minimizes the number of meters we have to walk (6826 < 7875)
 BFS measure: Number of edges
 Dijkstra measure: Meters
 ```

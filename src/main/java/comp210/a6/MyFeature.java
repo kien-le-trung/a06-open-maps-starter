@@ -52,8 +52,7 @@ public class MyFeature {
         MyFeature myFeature = new MyFeature();
         myFeature.coffeeShops.add(new CoffeeShop("Starbucks", 35.9130553, -79.0554276));
         myFeature.coffeeShops.add(new CoffeeShop("1922", 35.913622, -79.05438));
-        // meantime is en route from given source to given destination so additional time is 0. I turned it off temporarily to show the feature
-        // myFeature.coffeeShops.add(new CoffeeShop("Meantime", 35.911435, -79.051216));
+        myFeature.coffeeShops.add(new CoffeeShop("Meantime", 35.911435, -79.051216));
 
         // compute distance without coffee
         List<Integer> noCoffeeRoute = myFeature.shortestDistance(graph, source, destination);
