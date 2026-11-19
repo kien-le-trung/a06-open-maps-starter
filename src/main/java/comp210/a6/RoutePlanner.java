@@ -121,7 +121,7 @@ public class RoutePlanner {
             }
 
             if (currentDistance < lastDistance) {
-                throw new IllegalStateException("Check 1: " + current + " is settled with distance " + currentDistance + " after a vertex with distance " + lastDistance);
+                throw new IllegalStateException("Check 1 fails. Curr distance is " + currentDistance + "and  last distance is " + lastDistance);
             }
 
             settled.add(current);
@@ -134,7 +134,7 @@ public class RoutePlanner {
                 double candidate = currentDistance + edge.getEdgeData();
                 if (candidate < distance.get(neighbor)) {
                     if (settled.contains(neighbor)) {
-                        throw new IllegalStateException("Check 2: " + neighbor + " is already settled but a shorter distance is found");
+                        throw new IllegalStateException("Check 2 fails. " + neighbor + " is already in settled");
                     }
                     distance.put(neighbor, candidate);
                     parent.put(neighbor, current);

@@ -1,8 +1,8 @@
 # Final Project Write-up
 
-**Name:**
-**Onyen:**
-**BRIDGES URL:** https://bridges-cs.herokuapp.com/assignments/6/
+**Name:** Kien Le
+**Onyen:** kientrle
+**BRIDGES URL:** http://bridges-cs.herokuapp.com/assignments/6/kientrle
 **Destination (DESTINATION_NAME in Main.java):**
 
 Four questions, 20 points, plus 5 points for a BRIDGES URL that shows all four pictures. A paragraph or two each. Use the numbers your program printed
@@ -28,7 +28,14 @@ If your two routes are the same, explain how that can happen. Then pick a
 second destination where they differ, and report its numbers too.
 
 ```
+BFS route:      54 steps, 7220 m (4059 intersections reachable)
+Dijkstra route: 55 steps, 6496 m
 
+The two routes split right at Sitterson, and meet again at Raleigh Road
+
+BFS minimizes the number of steps we take (54 < 55). Dijkstra minimizes the number of meters we have to walk (6496 < 7220)
+BFS measure: Number of edges
+Dijkstra measure: Meters
 ```
 
 ---
@@ -94,7 +101,16 @@ Last, explain why a test that compares only the final distances cannot tell
 this code apart from yours.
 
 ```
+This is not Dijkstra since the queue stores the larger distances before smaller distances due to the way compareTo is
+written. It processes all the stale entries instead of skipping them like my Dijkstra, which is also a consequence of
+the reverse priority queue.
 
+Check 1 would fail first. Check 1 dictates that the current distance must be larger or equal to distance in the previous
+iteration. However, in this max-PQ, the later distances will be smaller than previous distances. Thus, check 1 fails.
+
+This Dijkstra still updates the distance HashMap if it finds smaller distances. Hence, given the same graph, it would
+also end up with the same shortest distance result, just with more iterations. Hence, comparing final results would 
+not differentiate the two versions.
 ```
 
 ---
@@ -112,7 +128,23 @@ edge break it? Road lengths are never negative. Name one other kind of edge
 weight where a negative value could show up.
 
 ```
+source ----2.0----> Node 1
+     -                   ^
+      -                  |
+       5.0              -4.0
+         -             |
+           - > Node 2 |
+           
+source, Node 1, Node 2
+"Check 2 fails. 1 is already in settled"
 
+The settled-set invariant promises that any settled vertex already has the shortest distance. The negative edge
+breaks this by decreasing the distance when moving from Node 2 to Node 1. If all edges are non-negative, the
+total distance can only go up from 5 (which is already larger than 2), and Node 1 can never have a shorter distance
+than 2.
+
+If we use the edge weights to indicate profits for delivery of orders. A negative edge might come up a road with higher
+tax or a very long road.
 ```
 
 ---
@@ -133,5 +165,20 @@ If you used AI for this part, say what you asked for and what you changed
 in what it gave you.
 
 ```
+My feature shows the shortest route in part 2, and the shortest route if we make a detour to grab a coffee from
+the closest coffee shop on campus, and the estimated additional walking time needed. Many students buy coffee
+between classes everyday, so it would be useful to know if we can make it to Starbucks, then to the next class
+within our schedule.
 
+ArrayList to store list of coffee shops. Array would be another choice, but ArrayList is resizable in case more
+coffee shops, or other shops, are added to the list.
+ArrayList to store routes. Array would be another choice, but ArrayList is resizable and can accommodate routes
+of different lengths, such as in merging two routes together.
+
+Design: I created a private nested class CoffeeShop, with a helper to retrieve the nearest vertex given lat, lon. This
+is cleaner and easier to trace as all information is packaged and function is suitably named.
+Initially, I stored distances through all coffee shops in a list, and return the min of that list. However, I
+realized I only need the shortest one, so I just kept some variables before the loop and overwrote them.
+
+I didn't use AI for this part. I came to it with question and it gave me back more questions, so I got frustrated.
 ```
